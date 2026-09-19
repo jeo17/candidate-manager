@@ -51,6 +51,17 @@ If Vite's port 5173 is occupied, run the services separately with `npm run api` 
 
 Browser tests start their own app on **5174** and API on **3002**. They copy `tests/fixtures/db.json` (the original sample data) into ignored `.test-data/db.json`, so your edits to the live database do not affect the tests. Test writes never modify your live database. On a computer without Edge, install Playwright Chromium with `npx playwright install chromium` and remove `channel: 'msedge'` from `playwright.config.ts`.
 
+## Deployment
+
+The Vue frontend can run on Netlify, but JSON Server must run as a separate web service. This repository includes `render.yaml` and a platform-aware API start script for Render:
+
+1. In Render, create a Blueprint from this repository. It creates the `folio-candidate-api` Node web service.
+2. Wait for the deploy, then verify `https://YOUR-SERVICE.onrender.com/candidatures` returns JSON.
+3. In Netlify, open **Project configuration → Environment variables** and set `VITE_API_URL` to the Render service URL without a trailing slash. Make the variable available to builds.
+4. Trigger a new Netlify production deploy, then verify the application in a private browser window with the local JSON Server stopped.
+
+Render's free web service is sufficient for a technical-test demonstration, but it sleeps when idle and uses an ephemeral filesystem. Candidate changes can reset after a restart, spin-down, or redeploy. A paid persistent disk is required if hosted edits must survive those events.
+
 ## What's included
 
 - Server-driven candidate list, combined filters, sorting, and pagination. Search and the custom 5–100 row limit share one reusable 300 ms debounce composable.
