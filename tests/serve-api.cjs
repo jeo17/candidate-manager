@@ -1,0 +1,12 @@
+const jsonServer = require('json-server')
+const fs = require('node:fs')
+const path = require('node:path')
+// Test writes use a disposable copy, never the supplied database.
+fs.mkdirSync('.test-data', { recursive: true })
+const database = path.resolve('.test-data/db.json')
+fs.copyFileSync('tests/fixtures/db.json', database)
+const server = jsonServer.create()
+server.use(jsonServer.defaults({ logger: false }))
+server.use(jsonServer.bodyParser)
+server.use(jsonServer.router(database))
+server.listen(3002, '127.0.0.1')
